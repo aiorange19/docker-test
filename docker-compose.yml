@@ -1,0 +1,23 @@
+version: '3'
+services:
+  db:
+    image: mysql:5.7@sha256:b3b2703de646600b008cbb2de36b70b21e51e7e93a7fca450d2b08151658b2dd
+    container_name: mysql57
+    volumes:
+      - ./docker/mysql57/data:/var/lib/mysql #データの永続化
+    ports:
+      - "3306:3306"
+    environment:
+      DB_USER_NAME: root
+      DB_PASSWORD: password
+  web:
+    build: .
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 8000 -b '0.0.0.0'"
+    volumes:
+      - .:/docker-test
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    stdin_open: true
+    tty: true
